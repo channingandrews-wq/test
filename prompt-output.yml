@@ -1,0 +1,72 @@
+name: Render Prompt Output
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  render:
+    if: contains(github.event.issue.title, 'Prompt Builder:')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build output text from form fields
+        id: build
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.issue.body || "";
+            function pick(id) {
+              const re = new RegExp(`(?<=\| ${id} \|\n\| :-+ \|\n\| )(.*?)(?=\n)`, 's');
+              const m = body.match(re);
+              return m ? m[1].trim() : '';
+            }
+
+            // GitHub Issue Forms deliver a table of fields in the issue body.
+            // We'll parse by labels as they appear in the form.
+            function getField(label) {
+              const re = new RegExp(label + ':\s*\*\*(.*?)\*\*', 'i');
+              const m = body.match(re);
+              return (m ? m[1] : '').trim();
+            }
+
+            // Fallback: lightweight parsing for each field by id (safe for most cases)
+            const fields = [
+              'channel','audience','audienceSegment','recentBehavior','location','useCase','messageObjective','featureOverview','vertical','cta','promotion','promotionType','otherPromoType','startDate','endDate','discountLevel','minSubtotal','maxDiscount','pickup','promoCode','dashpassOnly','secondaryModule','secondaryObjective','secondaryVertical','secondaryCta'
+            ];
+            const values = {};
+            for (const f of fields) {
+              const re = new RegExp(`\n### ${f}\n\n([\s\S]*?)(?:\n\n### |$)`, 'i');
+              const m = body.match(re);
+              values[f] = m ? m[1].trim() : '';
+            }
+
+            // Compose the output similar to Column F in the sheet.
+            function seg(v){ return v && v.toLowerCase() !== 'n/a' ? v : ''; }
+            const parts = [];
+            parts.push(`I need a ${values.channel || 'Email'} for our DoorDash ${values.audience || 'Consumer'} Retention team targeting ${seg(values.audienceSegment) || 'N/A'} ${values.recentBehavior || ''} in ${values.location || 'N/A'}.`);
+            parts.push(`Use Case: ${values.useCase || 'N/A'}`);
+            if (values.featureOverview) parts.push(`Feature/Service: ${values.featureOverview}`);
+            parts.push(`Objective: ${values.messageObjective || 'N/A'}`);
+            if ((values.promotion || '').toUpperCase() === 'Y') {
+              parts.push(`Promo → type=${values.promotionType || 'Select'}, window=${values.startDate || 'N/A'}–${values.endDate || 'N/A'}, discount=${values.discountLevel || 'N/A'}, min=${values.minSubtotal || 'N/A'}, max=${values.maxDiscount || 'N/A'}, pickup=${values.pickup || 'N'}, code=${values.promoCode || 'N/A'}, dashpassOnly=${values.dashpassOnly || 'N'}`);
+            }
+            parts.push(`CTA: "${values.cta || 'Order now'}"`);
+            if ((values.secondaryModule || '').toUpperCase() === 'Y') {
+              parts.push(`Also include a secondary message where the objective is ${values.secondaryObjective || 'N/A'}. Vertical: ${values.secondaryVertical || 'N/A'}. CTA: ${values.secondaryCta || 'Order now'}.`);
+            }
+
+            const output = parts.join(' ');
+
+            core.setOutput('output', output);
+
+      - name: Comment with rendered output
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const output = '${{ steps.build.outputs.output }}';
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `### Prompt Output\n\n${output}`
+            });

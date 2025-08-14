@@ -1,0 +1,257 @@
+name: Prompt Builder
+description: Fill out to generate a retention prompt (built from your spreadsheet fields)
+title: "Prompt Builder: <short-title>"
+labels: ["prompt-builder"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Prompt Builder
+        Complete the fields. Items marked *(Consumer-only)* are only needed if **Audience = Consumer**.
+        This form mirrors your sheet where **Column B = fields**, **Column C = options/examples**, and the output follows **Column F**.
+
+  - type: dropdown
+    id: channel
+    attributes:
+      label: Channel
+      description: Choose a delivery channel.
+      options:
+        - Email
+        - Push
+        - SMS
+    validations:
+      required: true
+
+  - type: dropdown
+    id: audience
+    attributes:
+      label: Audience
+      options:
+        - Consumer
+        - Dasher
+        - Merchant
+    validations:
+      required: true
+
+  - type: input
+    id: audienceSegment
+    attributes:
+      label: Audience Segment (Consumer-only)
+      description: Example: New Consumer, Dormant, DashPass Member
+      placeholder: New Consumer
+    validations:
+      required: false
+
+  - type: textarea
+    id: recentBehavior
+    attributes:
+      label: Recent Behavior
+      description: "What has this user done or not done recently? What’s their current mindset or situation?"
+      placeholder: "Hasn’t ordered in 30 days; Interested in movies; Values affordability; Abandoned cart; etc."
+    validations:
+      required: true
+
+  - type: input
+    id: location
+    attributes:
+      label: Location
+      description: "City/Region. Type 'N/A' if not applicable."
+      placeholder: "Los Angeles"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: useCase
+    attributes:
+      label: Use Case
+      options:
+        - Convert New Customers
+        - Reactivate Dormant Users
+        - Apology/Trust Recovery
+        - Promote New Feature, Service, or Mx
+        - Drive Promo Redemptions
+        - Non-monetary engagement
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: messageObjective
+    attributes:
+      label: Message Objective
+      description: "What do you want them to do, and what method/offer/feature supports that action?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: featureOverview
+    attributes:
+      label: Feature/Service Overview
+      description: "Describe the feature/service and how it helps. Type 'N/A' if not applicable."
+    validations:
+      required: false
+
+  - type: dropdown
+    id: vertical
+    attributes:
+      label: Vertical
+      options:
+        - Restaurant
+        - Grocery & Convenience
+        - Retail
+        - Alcohol
+        - N/A
+    validations:
+      required: false
+
+  - type: dropdown
+    id: cta
+    attributes:
+      label: Primary CTA
+      options:
+        - Order now
+        - Get DashPass
+        - Sign up
+        - Upgrade now
+        - Activate now
+        - Shop now
+        - Order drinks
+        - Shop gifts
+        - See deals
+    validations:
+      required: true
+
+  - type: dropdown
+    id: promotion
+    attributes:
+      label: Promotion?
+      options: ["Y", "N"]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: promotionType
+    attributes:
+      label: Promotion Type
+      description: Required only if Promotion = Y
+      options:
+        - Percent Off
+        - Dollar Off
+        - BOGO
+        - Free Delivery
+        - Other
+        - Select
+    validations:
+      required: false
+
+  - type: input
+    id: otherPromoType
+    attributes:
+      label: Other Promo Type (optional)
+      description: "If Promotion Type = Other, describe it."
+    validations:
+      required: false
+
+  - type: input
+    id: startDate
+    attributes:
+      label: Start Date (mm/dd/yy) — required if Promotion = Y
+      placeholder: "08/20/25"
+    validations:
+      required: false
+
+  - type: input
+    id: endDate
+    attributes:
+      label: End Date (mm/dd/yy) — required if Promotion = Y
+      placeholder: "08/30/25"
+    validations:
+      required: false
+
+  - type: input
+    id: discountLevel
+    attributes:
+      label: Discount Level — include % or $ (if Promotion = Y)
+      placeholder: "20% off"
+    validations:
+      required: false
+
+  - type: input
+    id: minSubtotal
+    attributes:
+      label: Minimum Subtotal (0 if none; if Promotion = Y)
+      placeholder: "0"
+    validations:
+      required: false
+
+  - type: input
+    id: maxDiscount
+    attributes:
+      label: Max Discount (N/A if none; if Promotion = Y)
+      placeholder: "N/A"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: pickup
+    attributes:
+      label: Pickup eligible? (if Promotion = Y)
+      options: ["Y", "N"]
+    validations:
+      required: false
+
+  - type: input
+    id: promoCode
+    attributes:
+      label: Promo Code (N/A if none; if Promotion = Y)
+      placeholder: "N/A"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: dashpassOnly
+    attributes:
+      label: DashPass only? (if Promotion = Y)
+      options: ["Y", "N"]
+    validations:
+      required: false
+
+  - type: dropdown
+    id: secondaryModule
+    attributes:
+      label: Secondary Message/Module?
+      options: ["Y", "N"]
+    validations:
+      required: true
+
+  - type: textarea
+    id: secondaryObjective
+    attributes:
+      label: Secondary Message Objective (if Secondary = Y)
+    validations:
+      required: false
+
+  - type: input
+    id: secondaryVertical
+    attributes:
+      label: Secondary Vertical (if Secondary = Y)
+      placeholder: "N/A"
+    validations:
+      required: false
+
+  - type: input
+    id: secondaryCta
+    attributes:
+      label: Secondary CTA (if Secondary = Y)
+      placeholder: "Order now"
+    validations:
+      required: false
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes (optional)
+      description: Any extra context for this prompt.
+    validations:
+      required: false
